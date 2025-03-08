@@ -63,7 +63,7 @@ const Register = () => {
     event.preventDefault();
     if (validateForm()) {
       const customerData = { address, name, email, phone, password };
-      const API_URL = "http://localhost:8081/yib/register";
+      const API_URL = "http://localhost:8081/api/yib/customers/register";
       axios
         .post(API_URL, customerData, {
           headers: {

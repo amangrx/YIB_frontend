@@ -43,7 +43,7 @@ const Login = () => {
     event.preventDefault();
     if (validateForm()) {
       const loginData = { email, password };
-      const API_URL = "http://localhost:8081/yib/login";
+      const API_URL = "http://localhost:8081/api/yib/customers/login";
       axios
         .post(API_URL, loginData, {
           headers: {
