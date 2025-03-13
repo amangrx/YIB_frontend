@@ -16,13 +16,13 @@ const NavBar = () => {
       <ul className="flex items-center space-x-10">
         {[
           { name: "Home", path: "/" },
-          { name: "IELTS Guide", path: "/ielts-guide" },
-          { name: "Preparation", path: "/preparation" },
-          { name: "Test Taking", path: "/test-taking" },
+          { name: "Take test", path: "/take_test" },
+          { name: "Library", path: "/library" },
+          { name: "Practice", path: "/practice" },
           { name: "Contact Us", path: "/contact" },
         ].map((item, index) => (
           <li key={index} className="relative group">
-            <Link to={item.path} className="text-seagreen font-bold">
+            <Link to={item.path} className="text-seagreen font-bold text-lg">
               {item.name}
             </Link>
             <span className="absolute left-0 bottom-[-8px] w-0 h-[3px] bg-seagreen transition-all duration-300 group-hover:w-full"></span>

@@ -3,3 +3,26 @@
 @theme {
   --color-seagreen: #2e8b57;
 }
+
+@layer utilities {
+  @keyframes fade-up {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    40% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    60% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .animate-fade-up {
+    animation: fade-up 3s ease-in-out infinite;
+  }
+}

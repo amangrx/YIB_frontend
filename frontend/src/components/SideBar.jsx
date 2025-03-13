@@ -13,11 +13,11 @@ import CustomButton from "./CustomButton";
 
 const Sidebar = () => {
   const menuItems = [
-    { name: "Home", path: "/admin-home", icon: <FaHome /> },
-    { name: "Manage User", path: "/manage-user", icon: <FaUserCog /> },
-    { name: "User performance", path: "/user-performance", icon: <FaTachometerAlt /> }, // Changed to FaTachometerAlt
-    { name: "Resource Details", path: "/resource-details", icon: <FaBook /> },
-    { name: "Add Resource", path: "/add-resource", icon: <FaBook /> },
+    { name: "Home", path: "/admin_home", icon: <FaHome /> },
+    { name: "Manage User", path: "/manage_user", icon: <FaUserCog /> },
+    { name: "User performance", path: "/user_performance", icon: <FaTachometerAlt /> },
+    { name: "Resource Details", path: "/resource_details", icon: <FaBook /> },
+    { name: "Add Resource", path: "/add_resource", icon: <FaBook /> },
     { name: "Transactions", path: "/transactions", icon: <FaMoneyBill /> },
     { name: "Performance", path: "/performance", icon: <FaChartBar /> },
   ];
@@ -28,7 +28,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="h-screen w-64 bg-seagreen text-white flex flex-col p-4 shadow-lg">
+    <div className="fixed top-0 left-0 h-screen w-64 bg-seagreen text-white flex flex-col p-4 shadow-lg">
       {/* Sidebar Header */}
       <h2 className="text-xl font-bold mb-6">Admin Dashboard</h2>
 

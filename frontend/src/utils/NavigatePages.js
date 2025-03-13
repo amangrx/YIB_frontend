@@ -12,6 +12,15 @@ const NavigatePages = () => {
     goToSignUp: () => {
       navigate("/register");
     },
+    goToTakeTest: () =>{
+      navigate("/take_test");
+    },
+    goToLibrary: () =>{
+      navigate("library")
+    },
+    goToPractice: () =>{
+      navigate("/practice")
+    },
   };
 };
 
