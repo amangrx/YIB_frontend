@@ -16,11 +16,11 @@ const NavigatePages = () => {
       navigate("/take_test");
     },
     goToLibrary: () =>{
-      navigate("library")
+      navigate("/library")
     },
     goToPractice: () =>{
       navigate("/practice")
-    },
+    }
   };
 };
 

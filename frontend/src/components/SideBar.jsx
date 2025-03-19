@@ -16,7 +16,7 @@ const Sidebar = () => {
     { name: "Home", path: "/admin_home", icon: <FaHome /> },
     { name: "Manage User", path: "/manage_user", icon: <FaUserCog /> },
     { name: "User performance", path: "/user_performance", icon: <FaTachometerAlt /> },
-    { name: "Resource Details", path: "/resource_details", icon: <FaBook /> },
+    { name: "Manage Resource", path: "/manage_resources", icon: <FaBook /> },
     { name: "Add Resource", path: "/add_resource", icon: <FaBook /> },
     { name: "Transactions", path: "/transactions", icon: <FaMoneyBill /> },
     { name: "Performance", path: "/performance", icon: <FaChartBar /> },
