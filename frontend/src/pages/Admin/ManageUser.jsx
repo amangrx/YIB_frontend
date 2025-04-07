@@ -11,7 +11,7 @@ const ManageUser = () => {
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
-        const response = await axios.get("http://localhost:8081/api/yib/customers/list-customers");
+        const response = await axios.get("http://localhost:8081/api/yib/admin/list-customers");
         setCustomers(response.data);
       } catch (err) {
         setError(err.message);
@@ -25,7 +25,7 @@ const ManageUser = () => {
 
   const handleDelete = async (customerId) => {
     try {
-      await axios.delete(`http://localhost:8081/api/yib/customers/${customerId}`);
+      await axios.delete(`http://localhost:8081/api/yib/admin/${customerId}`);
       setCustomers((prevCustomers) => prevCustomers.filter((customer) => customer.customerId !== customerId));
       alert("Customer deleted successfully");
     } catch (err) {

@@ -4,8 +4,9 @@ import axios from "axios";
 import { login_logo, logo } from "../utils/UseImages";
 import Input from "../components/Input";
 import Button from "../components/Button";
-import { FaGithub } from "react-icons/fa"; // GitHub Icon
-import { FcGoogle } from "react-icons/fc"; // Google Icon
+import { FaGithub } from "react-icons/fa"; 
+import { FcGoogle } from "react-icons/fc"; 
+import { toast } from "react-toastify"; 
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -50,13 +51,12 @@ const Login = () => {
             "Content-Type": "application/json",
           },
         })
-        .then((response) => {
-          alert(response.data.message);
+        .then(() => {
+          toast.success("Login successful!");
           goToHome();
         })
-        .catch((error) => {
-          console.log(error);
-          alert("Login failed: " + (error || "Unknown error"));
+        .catch(() => {
+          toast.error("Login failed");
         });
     }
   }

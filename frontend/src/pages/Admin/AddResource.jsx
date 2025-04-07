@@ -57,7 +57,7 @@ const AddResource = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8081/api/yib/resources/add_resource",
+        "http://localhost:8081/api/yib/admin/resources/add_resource",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );

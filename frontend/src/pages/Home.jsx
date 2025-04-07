@@ -4,7 +4,6 @@ import { RiFileList3Line, RiBookOpenLine } from "react-icons/ri";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
 import {
-  home_bg,
   home_bg_2,
   card1,
   card2,
@@ -14,7 +13,6 @@ import {
 } from "../utils/UseImages";
 import NavigatePages from "../utils/NavigatePages";
 import Card from "../components/Card";
-import FeaturedResource from "../components/FeaturedResource";
 
 const Home = () => {
   const { goToTakeTest, goToLibrary, goToPractice } = NavigatePages();
@@ -255,9 +253,6 @@ const Home = () => {
         </div>
       </div>
 
-      <div>
-        <FeaturedResource />
-      </div>
       <Footer />
     </div>
   );
