@@ -43,25 +43,37 @@ const Register = () => {
       valid = false;
     }
 
-    if (phoneNumber.trim()) {
-      registerErrorCopy.phoneNumber = "";
-    } else {
-      registerErrorCopy.phoneNumber = "Phone is required";
+    if (!phoneNumber.trim()) {
+      errors.phoneNumber = "Your phone number cannot be empty.";
       valid = false;
+    } else if (!/^\+?[0-9]{10,15}$/.test(phoneNumber)) {
+      errors.phoneNumber = "Enter a valid phone number.";
+      valid = false;
+    } else {
+      errors.phoneNumber = "";
     }
 
-    if (email.trim()) {
+    if (!email.trim()) {
+      registerErrorCopy.email = "Email is required.";
+      valid = false;
+    } else if (!/^\S+@\S+\.\S+$/.test(email)) {
+      registerErrorCopy.email = "Enter a valid email.";
+      valid = false;
+    } else {
       registerErrorCopy.email = "";
-    } else {
-      registerErrorCopy.email = "Email is required";
-      valid = false;
     }
 
-    if (password.trim()) {
-      registerErrorCopy.password = "";
-    } else {
-      registerErrorCopy.password = "Password is required";
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,12}$/;
+    if (!password.trim()) {
+      registerErrorCopy.password = "Password is required.";
       valid = false;
+    } else if (!passwordRegex.test(password)) {
+      registerErrorCopy.password =
+        "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character, and be 6-12 characters long.";
+      valid = false;
+    } else {
+      registerErrorCopy.password = "";
     }
 
     setRegisterError(registerErrorCopy);
@@ -94,13 +106,13 @@ const Register = () => {
           },
         })
         .then(() => {
-          toast.success("Registration successful! Login to access your account.");
+          toast.success(
+            "Registration successful! Login to access your account."
+          );
           goToLogin();
         })
-        .catch((error) => {
-          toast.error(
-            "Registration failed: "
-          );
+        .catch(() => {
+          toast.error("Registration failed: ");
         });
     }
   }

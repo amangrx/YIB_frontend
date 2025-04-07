@@ -50,6 +50,7 @@ const Login = () => {
           headers: {
             "Content-Type": "application/json",
           },
+          withCredentials: true, // Include credentials (cookies)
         })
         .then(() => {
           toast.success("Login successful!");
