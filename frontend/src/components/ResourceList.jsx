@@ -9,7 +9,7 @@ const ResourceList = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8081/api/yib/resources/get_resources")
+      .get("http://localhost:8081/api/yib/customers/get_resources")
       .then((response) => {
         setResources(response.data);
       })

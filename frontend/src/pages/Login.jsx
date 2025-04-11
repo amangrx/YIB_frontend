@@ -4,9 +4,9 @@ import axios from "axios";
 import { login_logo, logo } from "../utils/UseImages";
 import Input from "../components/Input";
 import Button from "../components/Button";
-import { FaGithub } from "react-icons/fa"; 
-import { FcGoogle } from "react-icons/fc"; 
-import { toast } from "react-toastify"; 
+import { FaGithub } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -45,19 +45,23 @@ const Login = () => {
     if (validateForm()) {
       const loginData = { email, password };
       const API_URL = "http://localhost:8081/api/yib/customers/login";
+
       axios
         .post(API_URL, loginData, {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true, // Include credentials (cookies)
         })
-        .then(() => {
+        .then((response) => {
           toast.success("Login successful!");
+          window.localStorage.setItem("token", response.data);
           goToHome();
         })
-        .catch(() => {
-          toast.error("Login failed");
+        .catch((error) => {
+          console.error("Login error:", error.response);
+          toast.error(
+            error?.response?.data?.message || "Login failed. Check credentials."
+          );
         });
     }
   }

@@ -23,6 +23,7 @@ const Register = () => {
     phoneNumber: "",
     email: "",
     password: "",
+    profilePicture: "",
   });
 
   function validateForm() {
@@ -44,13 +45,13 @@ const Register = () => {
     }
 
     if (!phoneNumber.trim()) {
-      errors.phoneNumber = "Your phone number cannot be empty.";
+      registerErrorCopy.phoneNumber = "Your phone number cannot be empty.";
       valid = false;
-    } else if (!/^\+?[0-9]{10,15}$/.test(phoneNumber)) {
-      errors.phoneNumber = "Enter a valid phone number.";
+    } else if (!/^\d{10}$/.test(phoneNumber)) {
+      registerErrorCopy.phoneNumber = "Phone number must be exactly 10 digits.";
       valid = false;
     } else {
-      errors.phoneNumber = "";
+      registerErrorCopy.phoneNumber = "";
     }
 
     if (!email.trim()) {
@@ -74,6 +75,25 @@ const Register = () => {
       valid = false;
     } else {
       registerErrorCopy.password = "";
+    }
+
+    if (profilePicture) {
+      const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+      const maxSizeInBytes = 5 * 1024 * 1024;
+
+      if (!allowedTypes.includes(profilePicture.type)) {
+        registerErrorCopy.profilePicture =
+          "Only JPG, JPEG, or PNG files are allowed.";
+        valid = false;
+      } else if (profilePicture.size > maxSizeInBytes) {
+        registerErrorCopy.profilePicture = "Image must be less than 5MB.";
+        valid = false;
+      } else {
+        registerErrorCopy.profilePicture = "";
+      }
+    } else {
+      registerErrorCopy.profilePicture = "Profile picture is required.";
+      valid = false;
     }
 
     setRegisterError(registerErrorCopy);
@@ -275,6 +295,11 @@ const Register = () => {
               onChange={(e) => setProfilePicture(e.target.files[0])}
               className="mt-2 p-2 border border-gray-300 rounded w-full"
             />
+            {registerError.profilePicture && (
+              <div className="text-red-500 text-sm mt-1">
+                {registerError.profilePicture}
+              </div>
+            )}
           </div>
 
           {/* Submit Button */}

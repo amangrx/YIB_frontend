@@ -15,17 +15,26 @@ import UserPerformance from "./pages/Admin/UserPerformance";
 import ManageResources from "./pages/Admin/ManageResources";
 import AddResource from "./pages/Admin/AddResource";
 
+import ExpertDashboard from "./pages/Expert/ExpertDashboard";
+import WritingTest from "./pages/Expert/WritingTest";
+
 import TakeTest from "./pages/TakeTest";
 import Library from "./pages/Library";
 import Practice from "./pages/Practice";
 import ContactUs from "./pages/ContactUs";
 import ResourceDetails from "./pages/ResourceDetails";
 
+import ProtectedRoute from "./components/ProtectedRoute";
+import { useAuth } from "./Context/AuthApi";
+
 function App() {
+  const { role } = useAuth();
+
   return (
     <>
       <Router>
         <Routes>
+          {/* Public routes */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -33,19 +42,89 @@ function App() {
           <Route path="/library" element={<Library />} />
           <Route path="/practice" element={<Practice />} />
           <Route path="/contact" element={<ContactUs />} />
-          <Route path="/resource_details/:id" element={<ResourceDetails/>}/>
-          {/* Routes for admin dashboard*/}
-          <Route path="/admin_home" element={<AdminHome/>} />
-          <Route path="/manage_user" element={<ManageUser/>} />
-          <Route path="/user_performance" element={<UserPerformance/>} />
-          <Route path="/manage_resources" element={<ManageResources/>} />
-          <Route path="/add_resource" element={<AddResource/>} />
-          <Route path="/transactions" element={<Transcation/>} />
-          <Route path="/performance" element={<Performance/>} />
+          <Route path="/test/writing" element={<WritingTest />} />
+
+          {/* Protected route for all authenticated users */}
+          <Route
+            path="/resource_details/:id"
+            element={
+              <ProtectedRoute roles={["USER", "EXPERT", "ADMIN"]}>
+                <ResourceDetails />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Expert routes */}
+          <Route
+            path="/expert/dashboard"
+            element={
+              <ProtectedRoute roles={["EXPERT"]}>
+                <ExpertDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Admin-only routes */}
+          <Route
+            path="/admin_home"
+            element={
+              <ProtectedRoute roles={["ADMIN"]}>
+                <AdminHome />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/manage_user"
+            element={
+              <ProtectedRoute roles={["ADMIN"]}>
+                <ManageUser />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/user_performance"
+            element={
+              <ProtectedRoute roles={["ADMIN"]}>
+                <UserPerformance />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/manage_resources"
+            element={
+              <ProtectedRoute roles={["ADMIN"]}>
+                <ManageResources />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/add_resource"
+            element={
+              <ProtectedRoute roles={["ADMIN"]}>
+                <AddResource />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/transactions"
+            element={
+              <ProtectedRoute roles={["ADMIN"]}>
+                <Transcation />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/performance"
+            element={
+              <ProtectedRoute roles={["ADMIN"]}>
+                <Performance />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </Router>
 
-      {/* Toastify Container */}
+      {/* Toast container */}
       <ToastContainer
         position="top-right"
         autoClose={3000}
