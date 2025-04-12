@@ -7,11 +7,15 @@ import Button from "../components/Button";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { toast } from "react-toastify";
+import getRole from "../utils/CheckRole";
+import { useAuth } from "../Context/AuthContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { goToSignUp, goToHome } = NavigatePages();
+  const { setRole } = useAuth();
+  const { goToSignUp, goToHome, goToAdminHome, goToExpertDashboard } =
+    NavigatePages();
 
   const [loginError, setLoginError] = useState({
     email: "",
@@ -52,10 +56,28 @@ const Login = () => {
             "Content-Type": "application/json",
           },
         })
-        .then((response) => {
+        .then(async (response) => {
           toast.success("Login successful!");
           window.localStorage.setItem("token", response.data);
-          goToHome();
+
+          // ✅ Check role after login
+          const role = await getRole();
+          setRole(role); // Set the role in context
+          console.log("Role after login:", role);
+
+          if (role === "ADMIN") {
+            toast.info("Redirecting to Admin Dashboard...");
+            goToAdminHome();
+          } else if (role === "CUSTOMER") {
+            toast.info("Redirecting to Home...");
+            goToHome();
+          } else if (role === "EXPERT") {
+            toast.info("Redirecting to Expert Dashboard...");
+            goToExpertDashboard();
+          } else {
+            toast.warn("Unrecognized role.");
+            goToHome();
+          }
         })
         .catch((error) => {
           console.error("Login error:", error.response);

@@ -20,6 +20,12 @@ const NavigatePages = () => {
     },
     goToPractice: () =>{
       navigate("/practice")
+    },
+    goToAdminHome: () => {
+      navigate("/admin_home");
+    }, 
+    goToExpertDashboard: () => {
+      navigate("/expert/dashboard");
     }
   };
 };

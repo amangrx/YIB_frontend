@@ -22,6 +22,8 @@ const Sidebar = () => {
     { name: "Performance", path: "/performance", icon: <FaChartBar /> },
   ];
 
+  
+
   const handleLogout = () => {
     console.log("Logging out...");
     // Implement actual logout logic here (e.g., clearing tokens, redirecting)

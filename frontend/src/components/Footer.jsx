@@ -51,7 +51,7 @@ const Footer = () => {
             Street-17 , Pokhara, <br /> Nepal, 33700
           </p>
           <p className="mt-2 text-sm">📞 +9815632456</p>
-          <p className="mt-2 text-sm">✉ yourieltsbook@gmail.com</p>
+          <p className="mt-2 text-sm">✉ ransingaman@gmail.com</p>
         </div>
 
         {/* Check resources */}
