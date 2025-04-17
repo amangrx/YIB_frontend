@@ -1,12 +1,12 @@
 import React from 'react'
 import Sidebar from '../../components/SideBar'
 
-const Transaction = () => {
+const UploadTest = () => {
   return (
     <div>
-      <Sidebar/>
+      <Sidebar />
     </div>
   )
 }
 
-export default Transaction
+export default UploadTest

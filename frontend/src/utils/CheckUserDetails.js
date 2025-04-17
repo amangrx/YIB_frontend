@@ -1,8 +1,6 @@
 import axios from "axios";
 
-const getRole = async () => {
-  const token = window.localStorage.getItem("token");
-
+const getUserDetails = async (token) => {
   if (!token) {
     console.error("Token is missing from localStorage");
     return null;
@@ -19,16 +17,21 @@ const getRole = async () => {
       }
     );
 
-    const userRole = response.data; 
-    console.log("Fetched role:", userRole);
-    return userRole;
+    const { customerId, name, role } = response.data;
+    console.log("Fetched user details:", { customerId, name, role });
+
+    return {
+      customerId,
+      name,
+      role,
+    };
   } catch (error) {
     if (error.response && error.response.status === 401) {
-      console.error("Error fetching role:", error);
+      console.error("Error fetching data:", error);
       localStorage.removeItem("token");
     }
     return null;
   }
 };
 
-export default getRole;
+export default getUserDetails;

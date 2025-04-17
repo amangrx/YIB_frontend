@@ -1,19 +1,19 @@
 import { useState } from "react";
 import NavigatePages from "../utils/NavigatePages";
 import axios from "axios";
-import { login_logo, logo } from "../utils/UseImages";
+import { login_logo, logo, login_bg } from "../utils/UseImages";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { toast } from "react-toastify";
-import getRole from "../utils/CheckRole";
+import getUserDetails from "../utils/CheckUserDetails";
 import { useAuth } from "../Context/AuthContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { setRole } = useAuth();
+  const { setUser, setToken , setIsLoggedIn} = useAuth();
   const { goToSignUp, goToHome, goToAdminHome, goToExpertDashboard } =
     NavigatePages();
 
@@ -44,49 +44,51 @@ const Login = () => {
     return valid;
   }
 
-  function handleSubmit(event) {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+
     if (validateForm()) {
       const loginData = { email, password };
       const API_URL = "http://localhost:8081/api/yib/customers/login";
 
-      axios
-        .post(API_URL, loginData, {
+      try {
+        const response = await axios.post(API_URL, loginData, {
           headers: {
             "Content-Type": "application/json",
           },
-        })
-        .then(async (response) => {
-          toast.success("Login successful!");
-          window.localStorage.setItem("token", response.data);
-
-          // ✅ Check role after login
-          const role = await getRole();
-          setRole(role); // Set the role in context
-          console.log("Role after login:", role);
-
-          if (role === "ADMIN") {
-            toast.info("Redirecting to Admin Dashboard...");
-            goToAdminHome();
-          } else if (role === "CUSTOMER") {
-            toast.info("Redirecting to Home...");
-            goToHome();
-          } else if (role === "EXPERT") {
-            toast.info("Redirecting to Expert Dashboard...");
-            goToExpertDashboard();
-          } else {
-            toast.warn("Unrecognized role.");
-            goToHome();
-          }
-        })
-        .catch((error) => {
-          console.error("Login error:", error.response);
-          toast.error(
-            error?.response?.data?.message || "Login failed. Check credentials."
-          );
         });
+
+        // Step 1: Set the token in context
+        setToken(response.data); // Assuming response.data is the JWT token
+        setIsLoggedIn(true); // Set the login state to true
+        // Step 2: Get user details using the token
+        const userDetails = await getUserDetails(response.data); // Pass the token here
+
+        // Step 3: Set the user details in context
+        setUser(userDetails); // This will also update the user in localStorage
+
+        // Now, handle the role-based redirection:
+        if (userDetails?.role === "ADMIN") {
+          toast.info("Redirecting to Admin Dashboard...");
+          goToAdminHome();
+        } else if (userDetails?.role === "CUSTOMER") {
+          toast.info("Redirecting to Home...");
+          goToHome();
+        } else if (userDetails?.role === "EXPERT") {
+          toast.info("Redirecting to Expert Dashboard...");
+          goToExpertDashboard();
+        } else {
+          toast.warn("Unrecognized role.");
+          goToHome();
+        }
+      } catch (error) {
+        console.error("Login error:", error.response);
+        toast.error(
+          error?.response?.data?.message || "Login failed. Check credentials."
+        );
+      }
     }
-  }
+  };
 
   return (
     <div className="flex h-screen flex-col lg:flex-row">
@@ -185,7 +187,7 @@ const Login = () => {
         </p>
 
         {/* Signup Image */}
-        <div className="w-80 h-48">
+        <div className="w-80 h-48">   
           <img src={login_logo} alt="Login" className="w-full h-full" />
         </div>
 

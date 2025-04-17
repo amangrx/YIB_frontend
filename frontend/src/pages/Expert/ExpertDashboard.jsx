@@ -1,9 +1,10 @@
 import React from 'react'
+import Sidebar from '../../components/SideBar'
 
 const ExpertDashboard = () => {
   return (
     <div>
-      <h1>expert dashboard </h1>
+      <Sidebar />
     </div>
   )
 }

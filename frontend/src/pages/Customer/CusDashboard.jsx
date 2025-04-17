@@ -1,7 +1,7 @@
 import React from 'react'
 import Sidebar from '../../components/SideBar'
 
-const UserPerformance = () => {
+const CusDashboard = () => {
   return (
     <div>
       <Sidebar/>
@@ -9,4 +9,4 @@ const UserPerformance = () => {
   )
 }
 
-export default UserPerformance
+export default CusDashboard

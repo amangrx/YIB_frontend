@@ -6,25 +6,23 @@ import "react-toastify/dist/ReactToastify.css";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import AdminHome from "./pages/Admin/AdminHome";
-import ManageUser from "./pages/Admin/ManageUser";
-import Transcation from "./pages/Admin/Transaction";
-import Performance from "./pages/Admin/Performance";
-import UserPerformance from "./pages/Admin/UserPerformance";
-import ManageResources from "./pages/Admin/ManageResources";
-import AddResource from "./pages/Admin/AddResource";
-import ExpertDashboard from "./pages/Expert/ExpertDashboard";
-import AddResourceExpert from "./pages/Expert/AddResource";
 import TakeTest from "./pages/TakeTest";
 import Library from "./pages/Library";
 import Practice from "./pages/Practice";
 import ContactUs from "./pages/ContactUs";
 import ResourceDetails from "./pages/ResourceDetails";
 
+import AdminHome from "./pages/Admin/AdminHome";
+import Request from "./pages/Admin/Request";
+
+import ExpertDashboard from "./pages/Expert/ExpertDashboard";
+import AddResource from "./pages/Expert/AddResource";
+import UploadTest from "./pages/Expert/UploadTest";
+
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
+import CusDashboard from "./pages/Customer/CusDashboard";
 
-// src/App.js
 function App() {
   return (
     <>
@@ -94,23 +92,23 @@ function App() {
             }
           />
 
-          {/* Protected routes */}
-          <Route
-            element={<ProtectedRoute roles={["CUSTOMER", "EXPERT", "ADMIN"]} />}
-          >
-            <Route path="/resource_details/:id" element={<ResourceDetails />} />
+          {/* Customer routes */}
+          <Route element={<ProtectedRoute roles={["CUSTOMER"]} />}>
+            <Route path="/customer/dashboard" element={<CusDashboard />} />
+            <Route path="/library/:id" element={<ResourceDetails />} />
           </Route>
 
           {/* Expert routes */}
           <Route element={<ProtectedRoute roles={["EXPERT"]} />}>
             <Route path="/expert/dashboard" element={<ExpertDashboard />} />
-            <Route path="/expert/resource" element={<AddResourceExpert />} />
+            <Route path="/expert/resource" element={<AddResource/>} />
+            <Route path="/expert/test" element={<UploadTest />} />
           </Route>
 
           {/* Admin routes */}
           <Route element={<ProtectedRoute roles={["ADMIN"]} />}>
-            <Route path="/admin_home" element={<AdminHome />} />
-            {/* ... other admin routes */}
+            <Route path="/admin/dashboard" element={<AdminHome />} />
+            <Route path="/admin/request" element={<Request />} />
           </Route>
         </Routes>
       </Router>

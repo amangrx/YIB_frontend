@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 const NavigatePages = () => {
   const navigate = useNavigate();
   return {
+    // Public pages
     goToHome: () => {
       navigate("/");
     },
@@ -21,12 +22,30 @@ const NavigatePages = () => {
     goToPractice: () =>{
       navigate("/practice")
     },
+
+    // Admin pages
     goToAdminHome: () => {
-      navigate("/admin_home");
+      navigate("/admin/dashboard");
     }, 
+    goToApproveRequests: () => {
+      navigate("/admin/request");
+    },
+
+    // Expert pages
     goToExpertDashboard: () => {
       navigate("/expert/dashboard");
-    }
+    },
+
+    // Customer pages
+    goToCustomerDashboard: () => {
+      navigate("/customer/dashboard");
+    }, 
+    goToAddResource: () => {
+      navigate("/expert/resource");
+    },
+    goToResourceDetails: (id) => {
+      navigate(`/library/${id}`);
+    },
   };
 };
 

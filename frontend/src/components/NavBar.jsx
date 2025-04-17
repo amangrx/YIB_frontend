@@ -4,28 +4,15 @@ import { logo } from "../utils/UseImages";
 import Button from "./Button";
 import { useState, useEffect } from "react";
 import { FaUser } from "react-icons/fa";
-import { useAuth } from "../Context/AuthContext";
 
 const NavBar = () => {
-  const { goToLogin, goToHome } = NavigatePages();
+  const { goToLogin, goToHome, goToCustomerDashboard } = NavigatePages();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const { role } = useAuth(); 
-  const navigate = useNavigate(); // ✅ Hook for programmatic navigation
 
   useEffect(() => {
     const token = window.localStorage.getItem("token");
     setIsLoggedIn(!!token);
   }, []);
-
-  const handleUserRole = () => {
-    if (role === "ADMIN") {
-      navigate("/admin_home");
-    } else if (role === "USER") {
-      navigate("/dashboard");
-    } else {
-      navigate("/profile"); // fallback route if needed
-    }
-  };
 
   return (
     <header className="w-full px-10 py-2 flex items-center justify-between">
@@ -40,7 +27,7 @@ const NavBar = () => {
 
       {/* Navigation Links */}
       <ul className="flex items-center space-x-10">
-        {[ 
+        {[
           { name: "Home", path: "/" },
           { name: "Take test", path: "/take_test" },
           { name: "Library", path: "/library" },
@@ -60,7 +47,7 @@ const NavBar = () => {
       {isLoggedIn ? (
         <div className="flex items-center space-x-4">
           <button
-            onClick={handleUserRole} // ✅ Now navigates based on role
+            onClick={goToCustomerDashboard} 
             className="w-10 h-10 bg-seagreen text-white rounded-full flex items-center justify-center cursor-pointer hover:bg-darkseagreen transition-all"
           >
             <FaUser className="text-xl" />

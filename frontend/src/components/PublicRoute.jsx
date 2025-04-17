@@ -11,7 +11,7 @@ const PublicRoute = ({ restricted = false, children }) => {
   // For restricted routes (like home page)
   if (restricted && role) {
     // Redirect admins/experts away
-    if (role === "ADMIN") return <Navigate to="/admin_home" replace />;
+    if (role === "ADMIN") return <Navigate to="/admin/dashboard" replace />;
     if (role === "EXPERT") return <Navigate to="/expert/dashboard" replace />;
     // For customers, render the children directly
     return children || <Outlet />;
