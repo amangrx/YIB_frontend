@@ -1,32 +1,23 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/SideBar";
 import Table from "../../components/Table";
-import ConfirmationDialog from "../../components/ConfirmationDialog";
 import { useAuth } from "../../Context/AuthContext";
 import axios from "axios";
-import { toast } from "react-toastify";
 
-const Request = () => {
+const MyUploads = () => {
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { token } = useAuth();
-  const [dialogConfig, setDialogConfig] = useState({
-    isOpen: false,
-    title: "",
-    message: "",
-    onConfirm: () => {},
-    isDestructive: false,
-  });
+  const { name, token } = useAuth();
 
   useEffect(() => {
     const fetchResources = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8081/api/yib/admin/resources",
+          `http://localhost:8081/api/yib/expert/${name}/my-uploads`,
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              "Authorization": `Bearer ${token}`,
             },
           }
         );
@@ -41,121 +32,24 @@ const Request = () => {
     fetchResources();
   }, [token]);
 
-  const handleDelete = async (resourceId) => {
-    try {
-      await axios.delete(
-        `http://localhost:8081/api/yib/admin/resources/delete/${resourceId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setResources(
-        resources.filter((resource) => resource.resourceId !== resourceId)
-      );
-      toast.success("Resource deleted successfully!");
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
-  const handleStatusUpdate = async (resourceId, newStatus) => {
-    try {
-      // Optimistic UI update
-      setResources(
-        resources.map((resource) =>
-          resource.resourceId === resourceId
-            ? { ...resource, status: newStatus }
-            : resource
-        )
-      );
-
-      await axios.put(
-        `http://localhost:8081/api/yib/admin/resources/update/${resourceId}/${newStatus}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      toast.success(`Status updated to ${newStatus}`);
-    } catch (error) {
-      // Revert on error
-      setResources(
-        resources.map((resource) =>
-          resource.resourceId === resourceId
-            ? { ...resource, status: resource.status }
-            : resource
-        )
-      );
-
-      const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "Failed to update status";
-      toast.error(errorMessage);
-    }
-  };
-
-  const showDeleteConfirmation = (resourceId) => {
-    setDialogConfig({
-      isOpen: true,
-      title: "Confirm Deletion",
-      message: "Are you sure you want to delete this resource? This action cannot be undone.",
-      onConfirm: () => {
-        handleDelete(resourceId);
-        setDialogConfig(prev => ({ ...prev, isOpen: false }));
-      },
-      isDestructive: true,
-    });
-  };
-
-  const showStatusChangeConfirmation = (resourceId, currentStatus, newStatus) => {
-    setDialogConfig({
-      isOpen: true,
-      title: "Confirm Status Change",
-      message: `Are you sure you want to change the status from ${currentStatus} to ${newStatus}?`,
-      onConfirm: () => {
-        handleStatusUpdate(resourceId, newStatus);
-        setDialogConfig(prev => ({ ...prev, isOpen: false }));
-      },
-      isDestructive: false,
-    });
-  };
-
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  const StatusDropdown = ({ currentStatus, resourceId }) => {
-    const handleChange = (e) => {
-      const newStatus = e.target.value;
-      if (newStatus !== currentStatus) {
-        showStatusChangeConfirmation(resourceId, currentStatus, newStatus);
-      }
-    };
-
+  const getStatusBadge = (status) => {
     return (
-      <select
-        value={currentStatus}
-        onChange={handleChange}
+      <span
         className={`px-3 py-1 rounded-full text-xs font-medium ${
-          currentStatus === "APPROVED"
+          status === "APPROVED"
             ? "bg-green-100 text-green-800"
-            : currentStatus === "REJECTED"
+            : status === "REJECTED"
             ? "bg-red-100 text-red-800"
             : "bg-yellow-100 text-yellow-800"
         }`}
       >
-        <option value="PENDING">PENDING</option>
-        <option value="APPROVED">APPROVED</option>
-        <option value="REJECTED">REJECTED</option>
-      </select>
+        {status}
+      </span>
     );
   };
 
@@ -167,9 +61,7 @@ const Request = () => {
     {
       key: "status",
       label: "Status",
-      render: (status, row) => (
-        <StatusDropdown currentStatus={status} resourceId={row.resourceId} />
-      ),
+      render: (status) => getStatusBadge(status),
     },
     {
       key: "createdAt",
@@ -179,18 +71,6 @@ const Request = () => {
     { key: "author", label: "Author" },
     { key: "type", label: "Resource Type" },
     { key: "price", label: "Price" },
-    {
-      key: "actions",
-      label: "Actions",
-      render: (_, row) => (
-        <button
-          onClick={() => showDeleteConfirmation(row.resourceId)}
-          className="bg-red-600 text-white text-base px-6 py-3 rounded-md cursor-pointer font-medium opacity-100 hover:opacity-80 hover:-translate-y-1 transition-all duration-300"
-        >
-          Delete
-        </button>
-      ),
-    },
   ];
 
   return (
@@ -203,24 +83,14 @@ const Request = () => {
       {/* Main content area with left margin equal to sidebar width */}
       <div className="flex-1 ml-64">
         <div className="p-6">
-          {/* Confirmation Dialog */}
-          <ConfirmationDialog
-            isOpen={dialogConfig.isOpen}
-            onClose={() => setDialogConfig(prev => ({ ...prev, isOpen: false }))}
-            onConfirm={dialogConfig.onConfirm}
-            title={dialogConfig.title}
-            message={dialogConfig.message}
-            isDestructive={dialogConfig.isDestructive}
-          />
-
           {/* Header Section */}
           <div className="flex justify-between items-center mb-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-800">
-                Resource Requests
+                My Uploads
               </h1>
               <p className="text-gray-600 mt-1">
-                Manage and review all resource submissions from users
+                View all your uploaded resources
               </p>
             </div>
             <div className="flex items-center space-x-2">
@@ -239,7 +109,7 @@ const Request = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div className="bg-white p-4 rounded-lg shadow">
               <h3 className="text-sm font-medium text-gray-500">
-                Total Requests
+                Total Uploads
               </h3>
               <p className="text-2xl font-semibold mt-1">{resources.length}</p>
             </div>
@@ -267,10 +137,10 @@ const Request = () => {
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <div className="p-4 border-b border-gray-200">
               <h2 className="text-lg font-medium text-gray-800">
-                Recent Requests
+                My Resources
               </h2>
               <p className="text-sm text-gray-500 mt-1">
-                Review, approve or delete resource requests
+                View your uploaded resources
               </p>
             </div>
             <div className="overflow-x-auto">
@@ -312,4 +182,4 @@ const Request = () => {
   );
 };
 
-export default Request;
+export default MyUploads;

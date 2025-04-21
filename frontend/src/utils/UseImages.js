@@ -12,3 +12,6 @@ export {default as card5} from "../assets/card5.jpg";
 export { default as login_logo } from "../assets/login-signup-assets/login_logo.png";
 export {default as signup_logo } from "../assets/login-signup-assets/signup_logo.png";
 export {default as login_bg } from "../assets/login-signup-assets/login2.jpeg";
+
+//exporting payment image 
+export {default as khalti } from "../assets/payment-assets/khalti_logo.png";

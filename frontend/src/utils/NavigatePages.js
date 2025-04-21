@@ -43,8 +43,8 @@ const NavigatePages = () => {
     goToAddResource: () => {
       navigate("/expert/resource");
     },
-    goToResourceDetails: (id) => {
-      navigate(`/library/${id}`);
+    goToResourceDetails: (resourceId) => {
+      navigate(`/library/${resourceId}`);
     },
   };
 };

@@ -39,9 +39,9 @@ const Sidebar = () => {
       path: "/expert/dashboard",
       icon: <FaTachometerAlt />,
     },
+    { name: "My uploads", path: "/expert/my-uploads", icon: <FaChartBar /> },
     { name: "Upload Resources", path: "/expert/resource", icon: <FaBook /> },
     { name: "Upload Test", path: "/expert/test", icon: <FaTools /> },
-  //   { name: "Performance", path: "/my_performance", icon: <FaChartBar /> },
   //   { name: "Profile", path: "/expert_profile", icon: <FaUserTie /> },
   ];
 

@@ -4,74 +4,100 @@ import getUserDetails from "../utils/CheckUserDetails";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(() => {
+  // Initialize state from localStorage
+  const [authState, setAuthState] = useState(() => {
     try {
-      const storedUser = localStorage.getItem("user");
-      return storedUser ? JSON.parse(storedUser) : null;
+      const token = localStorage.getItem("token");
+      const user = JSON.parse(localStorage.getItem("user") || "null");
+      return {
+        token,
+        user,
+        isLoggedIn: !!token, // Initialize isLoggedIn based on token presence
+        loading: true
+      };
     } catch (error) {
-      console.error("Error parsing stored user", error);
-      return null;
+      console.error("Error initializing auth state", error);
+      return {
+        token: null,
+        user: null,
+        isLoggedIn: false,
+        loading: false
+      };
     }
   });
 
-  const [token, setToken] = useState(() => {
-    try {
-      return localStorage.getItem("token");
-    } catch (error) {
-      console.error("Error reading token", error);
-      return null;
-    }
-  });
+  // Maintain the same external API by destructuring
+  const { token, user, isLoggedIn, loading } = authState;
 
-  const [loading, setLoading] = useState(true);
+  const updateAuthState = (newState) => {
+    setAuthState(prev => ({
+      ...prev,
+      ...newState
+    }));
+  };
 
+  // Keep the same function signatures for compatibility
   const updateUser = (newUserDetails) => {
     if (newUserDetails) {
       localStorage.setItem("user", JSON.stringify(newUserDetails));
-      console.log("User details updated:", newUserDetails);
+      updateAuthState({ user: newUserDetails });
     } else {
       localStorage.removeItem("user");
+      updateAuthState({ user: null });
     }
-    setUser(newUserDetails);
   };
 
   const updateToken = (newToken) => {
     if (newToken) {
       localStorage.setItem("token", newToken);
+      updateAuthState({ 
+        token: newToken,
+        isLoggedIn: true // Automatically set isLoggedIn when token is set
+      });
     } else {
       localStorage.removeItem("token");
+      updateAuthState({ 
+        token: null,
+        isLoggedIn: false // Automatically set isLoggedIn when token is removed
+      });
     }
-    setToken(newToken);
   };
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const userDetails = await getUserDetails(token); // use token
-        updateUser(userDetails);
-      } catch (error) {
-        console.error("Failed to fetch user details", error);
-        logout();
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, [token]);
 
   const logout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    setUser(null);
+    updateAuthState({
+      token: null,
+      user: null,
+      isLoggedIn: false,
+      loading: false
+    });
   };
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!authState.token) {
+        updateAuthState({ loading: false });
+        return;
+      }
+
+      try {
+        const userDetails = await getUserDetails(authState.token);
+        updateAuthState({
+          user: userDetails,
+          isLoggedIn: true, // Ensure isLoggedIn stays true
+          loading: false
+        });
+      } catch (error) {
+        console.error("Failed to fetch user details", error);
+        logout();
+      }
+    };
+
+    fetchUser();
+  }, [authState.token]);
+
+  // Maintain the exact same provider value structure
   return (
     <AuthContext.Provider
       value={{
@@ -85,7 +111,7 @@ export const AuthProvider = ({ children }) => {
         customerId: user?.customerId,
         name: user?.name,
         isLoggedIn,
-        setIsLoggedIn,
+        setIsLoggedIn: (value) => updateAuthState({ isLoggedIn: value })
       }}
     >
       {children}
@@ -93,4 +119,10 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};

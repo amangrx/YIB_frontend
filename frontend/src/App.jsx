@@ -10,18 +10,19 @@ import TakeTest from "./pages/TakeTest";
 import Library from "./pages/Library";
 import Practice from "./pages/Practice";
 import ContactUs from "./pages/ContactUs";
-import ResourceDetails from "./pages/ResourceDetails";
 
 import AdminHome from "./pages/Admin/AdminHome";
 import Request from "./pages/Admin/Request";
 
 import ExpertDashboard from "./pages/Expert/ExpertDashboard";
+import MyUploads from "./pages/Expert/MyUploads";
 import AddResource from "./pages/Expert/AddResource";
 import UploadTest from "./pages/Expert/UploadTest";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import CusDashboard from "./pages/Customer/CusDashboard";
+import ResourceDetails from "./pages/Customer/ResourceDetails";
 
 function App() {
   return (
@@ -95,13 +96,14 @@ function App() {
           {/* Customer routes */}
           <Route element={<ProtectedRoute roles={["CUSTOMER"]} />}>
             <Route path="/customer/dashboard" element={<CusDashboard />} />
-            <Route path="/library/:id" element={<ResourceDetails />} />
+            <Route path="/library/:resourceId" element={<ResourceDetails />} />
           </Route>
 
           {/* Expert routes */}
           <Route element={<ProtectedRoute roles={["EXPERT"]} />}>
             <Route path="/expert/dashboard" element={<ExpertDashboard />} />
             <Route path="/expert/resource" element={<AddResource/>} />
+            <Route path="/expert/my-uploads" element={<MyUploads/>} />
             <Route path="/expert/test" element={<UploadTest />} />
           </Route>
 
