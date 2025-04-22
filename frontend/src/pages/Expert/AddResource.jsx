@@ -147,14 +147,8 @@ const AddResource = () => {
         price: resourceType.value === "PAID" ? parseFloat(amount) : 0, // Add amount if paid
         description,
         content: JSON.stringify(content), // Convert EditorJS content to string
-        createdAt: uploadedDate,
-        // author: user?.name || "Anonymous",
-        // likes: 0,
-        // views: 0,
-        // tags: []
+        createdAt: uploadedDate
       };
-
-      console.log(content);
       const API_URL = "http://localhost:8081/api/yib/expert/resource";
       const response = await axios.post(API_URL, resourceData, {
         headers: {
@@ -163,7 +157,6 @@ const AddResource = () => {
         },
       });
       console.log("Resource submitted successfully:", response.data);
-      console.log(content)
       // Update toast to show success
       toast.update(toastId, {
         render: "Resource submitted successfully!",

@@ -23,6 +23,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import CusDashboard from "./pages/Customer/CusDashboard";
 import ResourceDetails from "./pages/Customer/ResourceDetails";
+import TestAnswer from "./pages/Customer/TestAnswer";
+import UserTest from "./pages/Customer/UserTest";
 
 function App() {
   return (
@@ -97,6 +99,8 @@ function App() {
           <Route element={<ProtectedRoute roles={["CUSTOMER"]} />}>
             <Route path="/customer/dashboard" element={<CusDashboard />} />
             <Route path="/library/:resourceId" element={<ResourceDetails />} />
+            <Route path="/take_test/answers/:questionId" element={<TestAnswer/>}/>
+            <Route path="/test/:questionId" element={<UserTest/>} />
           </Route>
 
           {/* Expert routes */}

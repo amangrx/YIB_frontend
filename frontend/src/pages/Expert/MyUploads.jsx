@@ -8,13 +8,13 @@ const MyUploads = () => {
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { name, token } = useAuth();
+  const { token } = useAuth();
 
   useEffect(() => {
     const fetchResources = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8081/api/yib/expert/${name}/my-uploads`,
+          `http://localhost:8081/api/yib/expert/my-uploads`,
           {
             headers: {
               "Authorization": `Bearer ${token}`,
@@ -68,7 +68,6 @@ const MyUploads = () => {
       label: "Created At",
       render: (date) => formatDate(date),
     },
-    { key: "author", label: "Author" },
     { key: "type", label: "Resource Type" },
     { key: "price", label: "Price" },
   ];

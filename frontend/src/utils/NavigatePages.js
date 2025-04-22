@@ -46,6 +46,12 @@ const NavigatePages = () => {
     goToResourceDetails: (resourceId) => {
       navigate(`/library/${resourceId}`);
     },
+    goToUserTest: (questionId) =>{
+      navigate(`/test/${questionId}`);
+    },
+    goToTestAnswer: (questionId) =>{
+      navigate(`/take_test/answers/${questionId}`);
+    }
   };
 };
 

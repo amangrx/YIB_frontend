@@ -34,6 +34,7 @@ const ResourceDetails = () => {
           }
         );
         if (response.data) {
+          console.log(JSON.parse(response.data.content));
           setResource(response.data);
         } else {
           setError({ message: "No resource found", status: 404 });
