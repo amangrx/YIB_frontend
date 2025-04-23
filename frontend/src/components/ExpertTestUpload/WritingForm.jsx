@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import Dropdown from "../Dropdown";
+import Button from "../Button"; // Import your custom Button component
 
 const WritingForm = ({ onSubmit, isLoading }) => {
   const [formData, setFormData] = useState({
     difficulty: null,
-    writingTaskType: null,  // Changed from taskType to match backend
+    writingTaskType: null,  
     question: "",
     answer: "",
-    imageFile: null,       // Changed from image to match backend
+    imageFile: null,       
   });
 
-  // Debugging: Log state changes
   React.useEffect(() => {
     console.log("Form data updated:", formData);
   }, [formData]);
@@ -55,7 +55,6 @@ const WritingForm = ({ onSubmit, isLoading }) => {
       formDataToSend.append('imageFile', formData.imageFile);
     }
   
-    // Debug: Log all form data entries
     for (let [key, value] of formDataToSend.entries()) {
       console.log(`${key}:`, value);
     }
@@ -173,17 +172,9 @@ const WritingForm = ({ onSubmit, isLoading }) => {
           </div>
         </div>
 
-        {/* Submit Button */}
+        {/* Submit Button - Using your custom Button component */}
         <div className="pt-4">
-          <button
-            type="submit"
-            disabled={isLoading}
-            className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
-              isLoading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            {isLoading ? "Submitting..." : "Submit Writing Task"}
-          </button>
+          <Button name={isLoading ? "Submitting..." : "Submit Writing Task"} />
         </div>
       </form>
     </div>

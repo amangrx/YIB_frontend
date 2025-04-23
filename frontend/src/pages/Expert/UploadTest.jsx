@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import Sidebar from "../../components/SideBar";
 import WritingForm from "../../components/ExpertTestUpload/WritingForm";
-import ReadingForm from "../../components/ExpertTestUpload/ReadingForm";
-import ListeningForm from "../../components/ExpertTestUpload/ListeningForm";
+import ReadingAndListeningForm from "../../components/ExpertTestUpload/ReadingAndListeningForm";
 import SpeakingForm from "../../components/ExpertTestUpload/SpeakingForm";
 import Dropdown from "../../components/Dropdown";
 import { toast } from "react-toastify";
@@ -14,7 +13,6 @@ const UploadTest = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { token } = useAuth();
 
-  // Define test types first
   const testTypes = [
     {
       id: "writing",
@@ -22,14 +20,9 @@ const UploadTest = () => {
       component: <WritingForm onSubmit={handleSubmit} />,
     },
     {
-      id: "reading",
-      label: "Reading Test",
-      component: <ReadingForm onSubmit={handleSubmit} />,
-    },
-    {
-      id: "listening",
-      label: "Listening Test",
-      component: <ListeningForm onSubmit={handleSubmit} />,
+      id: "reading_listening",
+      label: "Reading and Listening Test",
+      component: <ReadingAndListeningForm onSubmit={handleSubmit} />,
     },
     {
       id: "speaking",
@@ -43,35 +36,36 @@ const UploadTest = () => {
       toast.error("Please select a test type first");
       return;
     }
-  
+
     setIsLoading(true);
-  
+
     try {
       const endpointMap = {
         writing: "http://localhost:8081/api/yib/expert/writing",
-        reading: "http://localhost:8081/api/yib/expert/reading",
-        listening: "http://localhost:8081/api/yib/expert/listening",
+        reading_listening : "http://localhost:8081/api/yib/expert/reading-listening",
         speaking: "http://localhost:8081/api/yib/expert/speaking",
       };
-  
-      // Don't create new FormData - use the one passed from the form
-      // Just add the Authorization header
+
+      if (!token) {
+        throw new Error("Authentication token missing");
+      }
+
       const response = await fetch(endpointMap[selectedTest], {
         method: "POST",
+      
         headers: {
-          Authorization: `Bearer ${token}`,
-          // Don't set Content-Type - let browser set it with boundary
+          "Authorization": `Bearer ${token}`,
         },
-        body: formData, // Use the formData directly
+        body: formData,
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
           errorData.message || `HTTP error! status: ${response.status}`
         );
       }
-  
+
       const data = await response.json();
       toast.success("Test submitted successfully!");
     } catch (error) {
@@ -104,7 +98,7 @@ const UploadTest = () => {
             React.cloneElement(
               testTypes.find((t) => t.id === selectedTest).component,
               {
-                isLoading, // Pass loading state to forms if needed
+                isLoading,
               }
             )
           ) : (
