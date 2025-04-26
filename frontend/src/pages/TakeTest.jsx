@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import NavBar from '../components/NavBar';
 import Dropdown from '../components/Dropdown';
 import WritingTest from "../components/TestTypeList/WritingTest";
-import ReadingTest from "../components/TestTypeList/ReadingTest";
-import ListeningTest from "../components/TestTypeList/ListeningTest";
+import ReadingListeningTest from "../components/TestTypeList/ReadingListeningTest";
 import SpeakingTest from "../components/TestTypeList/SpeakingTest";
 
 const TakeTest = () => {
@@ -16,14 +15,9 @@ const TakeTest = () => {
       component: <WritingTest />,
     },
     {
-      id: "reading",
-      label: "Reading Test",
-      component: <ReadingTest />,
-    },
-    {
-      id: "listening",
-      label: "Listening Test",
-      component: <ListeningTest />,
+      id: "reading_listening",
+      label: "Reading & Listening Test",
+      component: <ReadingListeningTest />,
     },
     {
       id: "speaking",

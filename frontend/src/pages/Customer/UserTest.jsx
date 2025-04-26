@@ -23,24 +23,46 @@ const UserTest = () => {
   useEffect(() => {
     const startTest = async () => {
       try {
-        const response = await axios.post(
-          `http://localhost:8081/api/yib/auth/start/${questionId}`,
-          {},
+        const response = await axios.get(
+          `http://localhost:8081/api/yib/auth/detail/${questionId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        setTest(response.data);
-        setAnswer(response.data.answer || "");
+        console.log("suru ma ", response);
+        
+        // Transform the flat API response to the nested structure expected by the component
+        const transformedData = {
+          id: response.data.id,
+          writingQuestion: {
+            id: response.data.id,
+            question: response.data.question,
+            taskType: response.data.writingTaskType?.replace('TASK_', '') || 1,
+            imageUrl: response.data.imageUrl,
+            category: response.data.category,
+            difficulty: response.data.difficulty,
+            createdBy: response.data.createdBy,
+            createdAt: response.data.createdAt
+          }
+        };
+        
+        setTest(transformedData);
         setIsLoading(false);
       } catch (err) {
+        console.error("Error fetching test:", err);
         setError(err.response?.data?.message || "Failed to start the test");
         setIsLoading(false);
       }
     };
-    startTest();
+    
+    if (token) {
+      startTest();
+    } else {
+      setError("Authentication token is missing. Please log in again.");
+      setIsLoading(false);
+    }
   }, [questionId, token]);
 
   useEffect(() => {
@@ -49,23 +71,23 @@ const UserTest = () => {
   }, [answer]);
 
   const handleSubmit = async () => {
-    if (!test?.id) {
-      toast.error("Test session not initialized properly");
+    if (!questionId) {
+      toast.error("Question ID is missing");
       return;
     }
-
+  
     setIsSubmitting(true);
     try {
       await axios.post(
         `http://localhost:8081/api/yib/auth/submit`,
         {
-          id: test.id,
+          questionId,  
           answer,
-          duration: Math.max(1, Math.floor(timeSpent / 60)),
+          duration: Math.max(1, Math.floor(timeSpent / 60)), 
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }
@@ -73,6 +95,7 @@ const UserTest = () => {
       toast.success("Test submitted successfully!");
       goToTakeTest();
     } catch (err) {
+      console.error("Submission error:", err);
       toast.error(err.response?.data?.message || "Submission failed");
     } finally {
       setIsSubmitting(false);
@@ -125,6 +148,23 @@ const UserTest = () => {
     );
   }
 
+  if (!test) {
+    return (
+      <div className="max-w-xl mx-auto mt-12 p-8 bg-white rounded-xl shadow-md text-center">
+        <h3 className="text-xl font-semibold text-gray-900">No Test Data Available</h3>
+        <p className="mt-2 text-gray-600">Unable to load test information. Please try again later.</p>
+        <div className="mt-6">
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+          >
+            Refresh
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <NavBar />
@@ -136,7 +176,7 @@ const UserTest = () => {
               <div>
                 <h2 className="text-2xl font-bold text-white">IELTS Writing Test</h2>
                 <p className="text-teal-100 text-sm mt-1">
-                  Task: Academic Writing Task {test.writingQuestion.taskType || 1}
+                  Task: Academic Writing Task {test.writingQuestion.taskType}
                 </p>
               </div>
               <div className="flex items-center gap-4 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">

@@ -113,6 +113,7 @@ const ResourceList = () => {
         return;
       }
 
+      console.log(resource);
       if (result.hasPaid) {
         goToResourceDetails(resource.resourceId);
       } else {

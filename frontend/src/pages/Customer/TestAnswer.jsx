@@ -25,7 +25,7 @@ const TestAnswer = () => {
       setIsLoading(true);
       try {
         const response = await fetch(
-          `http://localhost:8081/api/yib/auth/answers/${questionId}`,
+          `http://localhost:8081/api/yib/auth/detail/${questionId}`,
           {
             headers: {
               'Authorization': `Bearer ${token}`,

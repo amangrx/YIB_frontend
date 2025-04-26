@@ -14,4 +14,4 @@ export {default as signup_logo } from "../assets/login-signup-assets/signup_logo
 export {default as login_bg } from "../assets/login-signup-assets/login2.jpeg";
 
 //exporting payment image 
-export {default as khalti } from "../assets/payment-assets/khalti_logo.png";
+export {default as stripe } from "../assets/payment-assets/Stripe_Logo.png";

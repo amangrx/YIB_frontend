@@ -25,6 +25,8 @@ import CusDashboard from "./pages/Customer/CusDashboard";
 import ResourceDetails from "./pages/Customer/ResourceDetails";
 import TestAnswer from "./pages/Customer/TestAnswer";
 import UserTest from "./pages/Customer/UserTest";
+import ListeningReadingAnswer from "./pages/Customer/ListeningReadingAnswer";
+import ReadingListeningUserTest from "./pages/Customer/UserTestCatReadListen";
 
 function App() {
   return (
@@ -99,8 +101,10 @@ function App() {
           <Route element={<ProtectedRoute roles={["CUSTOMER"]} />}>
             <Route path="/customer/dashboard" element={<CusDashboard />} />
             <Route path="/library/:resourceId" element={<ResourceDetails />} />
-            <Route path="/take_test/answers/:questionId" element={<TestAnswer/>}/>
+            <Route path="/answers/:questionId" element={<TestAnswer/>}/>
             <Route path="/test/:questionId" element={<UserTest/>} />
+            <Route path="/reading_listening_ans/:questionId" element={<ListeningReadingAnswer/>}/>
+            <Route path="/test/reading-listening/:questionId" element={<ReadingListeningUserTest/>}/>
           </Route>
 
           {/* Expert routes */}

@@ -1,13 +1,21 @@
 import { Dialog, DialogTitle, DialogContent, Button, Typography, Box } from '@mui/material';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
-import { khalti } from '../utils/UseImages';
+import { stripe } from '../utils/UseImages';
+// import {loadStripe } from '@stripe/react-stripe-js';
 
 const PaymentDialog = ({ open, onClose, resource }) => {
-  const handlePaymentRedirect = () => {
-    // Replace with your actual payment gateway URL
-    window.open('https://payment-gateway.example.com/checkout', '_blank');
-    onClose();
-  };
+
+
+  // const handlePaymentRedirect = async () => {
+  //   const stripePay = await loadStripe("pk_test_51RHW8rP00XBDnpDr2cei64KFSVV59VNYdCmE3nxYtN6sgpTIDHadZY2pdi84jqWLpKhu4sMZ4yYKUCvG6zC4VRG300kT2v6sw5");
+  //   const body = {
+  //     products : resource
+  //   }
+
+  //   const headers = {
+  //     "Content-Type":"application/json"
+  //   }
+  // };
 
   // White theme colors with accent colors
   const whiteTheme = {
@@ -50,7 +58,7 @@ const PaymentDialog = ({ open, onClose, resource }) => {
         }}>
           <Box sx={{ my: 3 }}>
             <img 
-              src={khalti} 
+              src={stripe} 
               alt="Payment Gateway Logo" 
             />
           </Box>

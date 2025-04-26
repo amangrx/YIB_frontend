@@ -50,7 +50,13 @@ const NavigatePages = () => {
       navigate(`/test/${questionId}`);
     },
     goToTestAnswer: (questionId) =>{
-      navigate(`/take_test/answers/${questionId}`);
+      navigate(`/answers/${questionId}`);
+    },
+    goToReadingAndListeningAns:(questionId) =>{
+      navigate(`/reading_listening_ans/${questionId}`)
+    },
+    goToReadingAndListeningTest:(questionId) =>{
+      navigate(`/test/reading-listening/${questionId}`)
     }
   };
 };
