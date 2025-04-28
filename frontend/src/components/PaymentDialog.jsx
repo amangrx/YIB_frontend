@@ -1,98 +1,184 @@
-import { Dialog, DialogTitle, DialogContent, Button, Typography, Box } from '@mui/material';
-import CreditCardIcon from '@mui/icons-material/CreditCard';
-import { stripe } from '../utils/UseImages';
-// import {loadStripe } from '@stripe/react-stripe-js';
+import React, { useState } from "react";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Button,
+  Typography,
+  Box,
+  TextField,
+  CircularProgress,
+} from "@mui/material";
+import CreditCardIcon from "@mui/icons-material/CreditCard";
+import useKhalti from "../hooks/useKhalti";
+import { toast } from "react-toastify";
 
 const PaymentDialog = ({ open, onClose, resource }) => {
+  const [customerInfo, setCustomerInfo] = useState({
+    name: "",
+    email: "",
+    phone: "",
+  });
 
+  const { initiatePayment, error, isLoading } = useKhalti({
+    onSuccess: (response) => {
+      console.log("Payment initiated successfully:", response);
+    },
+    onError: (error) => {
+      console.error("Payment failed:", error);
+      toast.error(error.message || "Payment initiation failed");
+    },
+  });
 
-  // const handlePaymentRedirect = async () => {
-  //   const stripePay = await loadStripe("pk_test_51RHW8rP00XBDnpDr2cei64KFSVV59VNYdCmE3nxYtN6sgpTIDHadZY2pdi84jqWLpKhu4sMZ4yYKUCvG6zC4VRG300kT2v6sw5");
-  //   const body = {
-  //     products : resource
-  //   }
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setCustomerInfo((prev) => ({ ...prev, [name]: value }));
+  };
 
-  //   const headers = {
-  //     "Content-Type":"application/json"
-  //   }
-  // };
+  const handlePayment = async (e) => {
+    e.preventDefault();
 
-  // White theme colors with accent colors
-  const whiteTheme = {
-    primary: '#ffffff',       // White
-    secondary: '#f5f5f5',     // Light gray
-    accent: '#6a0dad',        // Purple accent color
-    text: '#333333',          // Dark text
-    lightText: '#666666'       // Light text
+    if (!resource || !customerInfo.name || !customerInfo.email || !customerInfo.phone) {
+      toast.error("Please fill all customer information");
+      return;
+    }
+
+    if (!/^[9][6-8]\d{8}$/.test(customerInfo.phone)) {
+      toast.error("Please enter a valid Nepali phone number (98XXXXXXXX)");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerInfo.email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    // Create payment data with camelCase property names to match Java backend
+    const paymentData = {
+      resourceId: resource.resourceId,
+      amount: resource.price * 100, // Convert to paisa
+      purchaseOrderId: `order_${Date.now()}`, // Changed from purchase_order_id to purchaseOrderId
+      purchaseOrderName: resource.title, // Changed from purchase_order_name to purchaseOrderName
+      customerInfo: customerInfo, // Changed from customer_info to customerInfo
+      returnUrl: "http://localhost:5173/payment/success" // Added required returnUrl field
+    };
+
+    console.log("Sending payment data:", paymentData);
+
+    try {
+      await initiatePayment(paymentData);
+    } catch (err) {
+      console.error("Payment initiation failed:", err);
+    }
+  };
+
+  // Theme colors
+  const theme = {
+    primary: "#6a0dad",
+    secondary: "#f5f5f5",
+    text: "#333333",
+    lightText: "#666666",
   };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <Box sx={{ 
-        p: 3, 
-        textAlign: 'center',
-        backgroundColor: whiteTheme.primary,
-        color: whiteTheme.text
-      }}>
-        <DialogTitle sx={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center',
-          color: whiteTheme.accent  // Using accent color for the title
-        }}>
-          <CreditCardIcon sx={{ 
-            fontSize: 40, 
-            mr: 2,
-            color: 'inherit'
-          }} />
-          <Typography variant="h4" component="div" sx={{ color: 'inherit' }}>
-            Payment Gateway
-          </Typography>
+      <Box sx={{ p: 3, textAlign: "center" }}>
+        <DialogTitle
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            color: theme.primary,
+          }}
+        >
+          <CreditCardIcon sx={{ fontSize: 40, mr: 2 }} />
+          <Box component="span" sx={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+            Complete Your Payment
+          </Box>
         </DialogTitle>
 
-        <DialogContent sx={{ 
-          backgroundColor: whiteTheme.secondary,
-          borderRadius: '4px',
-          padding: '20px',
-          marginTop: '16px'
-        }}>
-          <Box sx={{ my: 3 }}>
-            <img 
-              src={stripe} 
-              alt="Payment Gateway Logo" 
+        <DialogContent
+          sx={{
+            backgroundColor: theme.secondary,
+            borderRadius: "4px",
+            p: 3,
+            mt: 2,
+          }}
+        >
+          <Box component="form" onSubmit={handlePayment} sx={{ mt: 2 }}>
+            <TextField
+              fullWidth
+              label="Full Name"
+              name="name"
+              value={customerInfo.name}
+              onChange={handleChange}
+              margin="normal"
+              required
             />
+
+            <TextField
+              fullWidth
+              label="Email Address"
+              name="email"
+              type="email"
+              value={customerInfo.email}
+              onChange={handleChange}
+              margin="normal"
+              required
+            />
+
+            <TextField
+              fullWidth
+              label="Phone Number"
+              name="phone"
+              type="tel"
+              value={customerInfo.phone}
+              onChange={handleChange}
+              margin="normal"
+              required
+              inputProps={{ pattern: "[9][6-8][0-9]{8}" }}
+              helperText="Format: 98XXXXXXXX"
+            />
+
+            <Typography variant="h6" sx={{ mt: 3, color: theme.text }}>
+              Pay NPR {resource?.price?.toFixed(2) || "0.00"} for:{" "}
+              {resource?.title}
+            </Typography>
+
+            <Typography variant="body2" sx={{ color: theme.lightText, mb: 3 }}>
+              You'll be redirected to Khalti's secure payment page.
+            </Typography>
+
+            {error && (
+              <Typography color="error" sx={{ mb: 2 }}>
+                Error: {error.message}
+              </Typography>
+            )}
+
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              size="large"
+              disabled={isLoading}
+              sx={{
+                py: 2,
+                mt: 2,
+                backgroundColor: theme.primary,
+                "&:hover": { backgroundColor: "#5a0b9d" },
+                fontSize: "1.1rem",
+              }}
+              startIcon={
+                isLoading ? (
+                  <CircularProgress size={24} color="inherit" />
+                ) : (
+                  <CreditCardIcon />
+                )
+              }
+            >
+              {isLoading ? "Processing..." : "Pay with Khalti"}
+            </Button>
           </Box>
-
-          <Typography variant="h6" sx={{ color: whiteTheme.text, mb: 2 }}>
-            Pay NPR {resource?.price || '0.00'} to access: {resource?.title}
-          </Typography>
-
-          <Typography variant="body2" sx={{ color: whiteTheme.lightText, mb: 3 }}>
-            You'll be redirected to a secure payment page to complete your transaction.
-          </Typography>
-
-          <Button
-            variant="contained"
-            sx={{ 
-              mt: 2, 
-              py: 2, 
-              fontSize: '1.1rem',
-              backgroundColor: whiteTheme.accent,  // Using accent color for the button
-              color: 'white',
-              '&:hover': {
-                backgroundColor: '#5a0b9d',  // Darker shade of accent
-                transform: 'translateY(-2px)',
-                boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
-              },
-              transition: 'all 0.3s ease'
-            }}
-            size="large"
-            fullWidth
-            onClick={handlePaymentRedirect}
-            startIcon={<CreditCardIcon sx={{ color: 'white' }} />}
-          >
-            Proceed to Payment
-          </Button>
         </DialogContent>
       </Box>
     </Dialog>

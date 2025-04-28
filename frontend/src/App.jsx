@@ -18,6 +18,7 @@ import ExpertDashboard from "./pages/Expert/ExpertDashboard";
 import MyUploads from "./pages/Expert/MyUploads";
 import AddResource from "./pages/Expert/AddResource";
 import UploadTest from "./pages/Expert/UploadTest";
+import ReviewTest from "./pages/Expert/ReviewTest";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
@@ -27,6 +28,7 @@ import TestAnswer from "./pages/Customer/TestAnswer";
 import UserTest from "./pages/Customer/UserTest";
 import ListeningReadingAnswer from "./pages/Customer/ListeningReadingAnswer";
 import ReadingListeningUserTest from "./pages/Customer/UserTestCatReadListen";
+import PaymentSuccess from "./pages/Customer/PaymentSuccess";
 
 function App() {
   return (
@@ -105,6 +107,7 @@ function App() {
             <Route path="/test/:questionId" element={<UserTest/>} />
             <Route path="/reading_listening_ans/:questionId" element={<ListeningReadingAnswer/>}/>
             <Route path="/test/reading-listening/:questionId" element={<ReadingListeningUserTest/>}/>
+            <Route path="/payment/success" element={<PaymentSuccess/>}/>
           </Route>
 
           {/* Expert routes */}
@@ -113,6 +116,7 @@ function App() {
             <Route path="/expert/resource" element={<AddResource/>} />
             <Route path="/expert/my-uploads" element={<MyUploads/>} />
             <Route path="/expert/test" element={<UploadTest />} />
+            <Route path="/expert/review/test" element={<ReviewTest/>}/>
           </Route>
 
           {/* Admin routes */}

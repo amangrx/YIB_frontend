@@ -42,7 +42,7 @@ const Sidebar = () => {
     { name: "My uploads", path: "/expert/my-uploads", icon: <FaChartBar /> },
     { name: "Upload Resources", path: "/expert/resource", icon: <FaBook /> },
     { name: "Upload Test", path: "/expert/test", icon: <FaTools /> },
-  //   { name: "Profile", path: "/expert_profile", icon: <FaUserTie /> },
+    { name: "Review Test", path: "/expert/review/test", icon: <FaUserTie /> },
   ];
 
   // Customer menu items
