@@ -6,8 +6,11 @@ import {
 } from "react-icons/fa";
 import Button from "./Button";
 import { Link } from "react-router-dom";
+import NavigatePages from "../utils/NavigatePages";
 
 const Footer = () => {
+  const { goToLibrary } = NavigatePages();
+
   return (
     <footer className="bg-gray-900 text-gray-300 py-10">
       <div className="container mx-auto px-6 lg:px-20 flex flex-wrap justify-between">
@@ -29,7 +32,6 @@ const Footer = () => {
               { name: "Home", path: "/" },
               { name: "Take test", path: "/take_test" },
               { name: "Library", path: "/library" },
-              { name: "Practice", path: "/practice" },
               { name: "Contact Us", path: "/contact" },
             ].map((item, index) => (
               <li key={index}>
@@ -57,7 +59,9 @@ const Footer = () => {
         {/* Check resources */}
         <div>
           <h3 className="text-white font-semibold mb-4">Check resources</h3>
-          <Button name="Explore" />
+          <div onClick={goToLibrary}>
+            <Button name="Explore" />
+          </div>
         </div>
       </div>
 

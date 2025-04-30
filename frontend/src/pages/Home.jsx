@@ -15,7 +15,7 @@ import NavigatePages from "../utils/NavigatePages";
 import Card from "../components/Card";
 
 const Home = () => {
-  const { goToTakeTest, goToLibrary, goToPractice } = NavigatePages();
+  const { goToTakeTest, goToLibrary } = NavigatePages();
 
   return (
     <div className="w-full min-h-screen bg-gray-100">
@@ -78,7 +78,7 @@ const Home = () => {
           logo={<FaTasks className="text-green-500 w-10 h-10" />}
           title="Focus on Weak Areas"
           description="Improve your performance by practicing specific IELTS sections tailored to your needs."
-          onClick={goToPractice}
+          onClick={goToTakeTest}
         />
       </div>
       {/* ending of the card section  */}
@@ -245,7 +245,7 @@ const Home = () => {
             </ul>
             <button
               className="mt-6 px-5 py-2 bg-seagreen text-white font-semibold rounded-lg shadow-md cursor-pointer hover:opacity-80 hover:-translate-y-1 transition-all duration-300"
-              onClick={goToPractice}
+              onClick={goToTakeTest}
             >
               Practice test
             </button>

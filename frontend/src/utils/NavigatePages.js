@@ -19,9 +19,6 @@ const NavigatePages = () => {
     goToLibrary: () =>{
       navigate("/library")
     },
-    goToPractice: () =>{
-      navigate("/practice")
-    },
 
     // Admin pages
     goToAdminHome: () => {

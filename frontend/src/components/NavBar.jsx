@@ -41,7 +41,6 @@ const NavBar = () => {
           { name: "Home", path: "/" },
           { name: "Take test", path: "/take_test" },
           { name: "Library", path: "/library" },
-          { name: "Practice", path: "/practice" },
           { name: "Contact Us", path: "/contact" },
         ].map((item, index) => (
           <li key={index} className="relative group">

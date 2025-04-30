@@ -8,7 +8,6 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import TakeTest from "./pages/TakeTest";
 import Library from "./pages/Library";
-import Practice from "./pages/Practice";
 import ContactUs from "./pages/ContactUs";
 
 import AdminHome from "./pages/Admin/AdminHome";
@@ -77,15 +76,6 @@ function App() {
             element={
               <PublicRoute restricted>
                 <Library />
-              </PublicRoute>
-            }
-          />
-
-          <Route
-            path="/practice"
-            element={
-              <PublicRoute restricted>
-                <Practice />
               </PublicRoute>
             }
           />
