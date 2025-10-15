@@ -38,7 +38,12 @@ const PaymentDialog = ({ open, onClose, resource }) => {
   const handlePayment = async (e) => {
     e.preventDefault();
 
-    if (!resource || !customerInfo.name || !customerInfo.email || !customerInfo.phone) {
+    if (
+      !resource ||
+      !customerInfo.name ||
+      !customerInfo.email ||
+      !customerInfo.phone
+    ) {
       toast.error("Please fill all customer information");
       return;
     }
@@ -53,6 +58,10 @@ const PaymentDialog = ({ open, onClose, resource }) => {
       return;
     }
 
+    localStorage.setItem("lastPaymentResourceId", resource.resourceId);
+    sessionStorage.setItem("lastPaymentResourceId", resource.resourceId);
+    console.log("Stored resourceId:", resource.resourceId);
+
     // Create payment data with camelCase property names to match Java backend
     const paymentData = {
       resourceId: resource.resourceId,
@@ -60,7 +69,7 @@ const PaymentDialog = ({ open, onClose, resource }) => {
       purchaseOrderId: `order_${Date.now()}`, // Changed from purchase_order_id to purchaseOrderId
       purchaseOrderName: resource.title, // Changed from purchase_order_name to purchaseOrderName
       customerInfo: customerInfo, // Changed from customer_info to customerInfo
-      returnUrl: "http://localhost:5173/payment/success" // Added required returnUrl field
+      returnUrl: "http://localhost:5173/payment/success", // Added required returnUrl field
     };
 
     console.log("Sending payment data:", paymentData);

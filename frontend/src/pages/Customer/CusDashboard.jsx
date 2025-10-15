@@ -5,25 +5,34 @@ import { useAuth } from '../../Context/AuthContext';
 
 const CusDashboard = () => {
   const [tests, setTests] = useState([]);
+  const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedAnswers, setExpandedAnswers] = useState({});
   const { token } = useAuth();
 
   useEffect(() => {
-    const fetchTests = async () => {
+    const fetchData = async () => {
       try {
         if (!token) {
           throw new Error('No authentication token found');
         }
 
-        const response = await axios.get('http://localhost:8081/api/yib/auth/dashboard/tests', {
+        // Fetch user details
+        const userResponse = await axios.get('http://localhost:8081/api/yib/auth/user-details', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
-        
-        setTests(response.data);
+        setUserDetails(userResponse.data);
+
+        // Fetch tests
+        const testsResponse = await axios.get('http://localhost:8081/api/yib/auth/dashboard/tests', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        setTests(testsResponse.data);
       } catch (err) {
         setError(err.response?.data?.message || err.message);
       } finally {
@@ -31,7 +40,7 @@ const CusDashboard = () => {
       }
     };
 
-    fetchTests();
+    fetchData();
   }, [token]);
 
   const toggleAnswerExpansion = (id) => {
@@ -41,14 +50,19 @@ const CusDashboard = () => {
     }));
   };
 
+  // Calculate average score
+  const averageScore = tests.length > 0 
+    ? (tests.reduce((sum, test) => sum + (test.score || 0), 0) / tests.length).toFixed(1)
+    : 0;
+
   if (loading) {
     return (
       <div className="flex min-h-screen bg-gray-50">
         <Sidebar />
-        <div className="ml-64 flex-1 p-8 flex items-center justify-center"> {/* Added ml-64 */}
+        <div className="ml-64 flex-1 p-8 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600 mx-auto"></div>
-            <p className="mt-3 text-gray-600">Loading your writing tests...</p>
+            <p className="mt-3 text-gray-600">Loading your dashboard...</p>
           </div>
         </div>
       </div>
@@ -59,7 +73,7 @@ const CusDashboard = () => {
     return (
       <div className="flex min-h-screen bg-gray-50">
         <Sidebar />
-        <div className="ml-64 flex-1 p-8 flex items-center justify-center"> {/* Added ml-64 */}
+        <div className="ml-64 flex-1 p-8 flex items-center justify-center">
           <div className="max-w-md w-full bg-white rounded-xl shadow-md overflow-hidden p-6">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -68,7 +82,7 @@ const CusDashboard = () => {
                 </svg>
               </div>
               <div className="ml-4">
-                <h3 className="text-lg font-medium text-gray-900">Error loading tests</h3>
+                <h3 className="text-lg font-medium text-gray-900">Error loading dashboard</h3>
                 <p className="mt-1 text-sm text-gray-600">{error}</p>
                 <button 
                   onClick={() => window.location.reload()}
@@ -88,8 +102,50 @@ const CusDashboard = () => {
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
       
-      <main className="ml-64 flex-1 p-6 lg:p-8"> {/* Added ml-64 */}
+      <main className="ml-64 flex-1 p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
+          {/* User Details Section */}
+          <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="flex-shrink-0">
+                  <div className="h-16 w-16 rounded-full bg-indigo-100 flex items-center justify-center">
+                    <span className="text-2xl font-medium text-indigo-600">
+                      {userDetails?.firstName?.charAt(0) || 'U'}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">
+                    {userDetails?.firstName} {userDetails?.lastName}
+                  </h2>
+                  <p className="text-sm text-gray-500">{userDetails?.email}</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <p className="text-sm font-medium text-gray-500">Tests Taken</p>
+                  <p className="text-2xl font-bold text-indigo-600">{tests.length}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-500">Average Score</p>
+                  <p className="text-2xl font-bold text-indigo-600">
+                    {averageScore}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-500">Member Since</p>
+                  <p className="text-lg font-medium text-gray-900">
+                    {userDetails?.createdAt 
+                      ? new Date(userDetails.createdAt).toLocaleDateString() 
+                      : '-'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Writing Test History Section */}
           <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Writing Test History</h1>

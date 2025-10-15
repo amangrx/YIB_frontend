@@ -3,12 +3,11 @@ import React from "react";
 const FileUploadInput = ({ id, label, onChange, accept, file, required = false }) => {
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
-      // Create a proper event structure that matches what the parent expects
       const syntheticEvent = {
         target: {
-          name: id,  // Use the id as the field name
-          value: e.target.files[0], // For consistency with other inputs
-          files: e.target.files     // Also provide the files array
+          name: id,  
+          value: e.target.files[0], 
+          files: e.target.files     
         }
       };
       onChange(syntheticEvent);

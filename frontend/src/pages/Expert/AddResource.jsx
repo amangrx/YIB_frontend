@@ -1,22 +1,21 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useCallback } from "react";
 import SideBar from "../../components/SideBar";
 import Input from "../../components/Input";
 import Dropdown from "../../components/Dropdown";
 import Button from "../../components/Button";
-import EditorComponent from "../../components/EditorComponent";
+import FileUploadInput from "../../components/FileUploadInput";
 import { toast } from "react-toastify";
 import { useAuth } from "../../Context/AuthContext";
-import axios from "axios";
 
 const AddResource = () => {
   const [resourceName, setResourceName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [resourceType, setResourceType] = useState(null); 
+  const [resourceType, setResourceType] = useState(null);
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [uploadedDate] = useState(new Date().toISOString().split("T")[0]);
+  const [pdfFile, setPdfFile] = useState(null);
   const { token } = useAuth();
-  const editorRef = useRef(null);
 
   const categoryOptions = [
     { value: "grammar-tips", label: "Grammar Tips" },
@@ -31,7 +30,7 @@ const AddResource = () => {
     { value: "common-mistakes", label: "Common Mistakes" },
   ];
 
-  const typeOptions = [ 
+  const typeOptions = [
     { value: "FREE", label: "Free" },
     { value: "PAID", label: "Paid" },
   ];
@@ -39,12 +38,13 @@ const AddResource = () => {
   const [resourceError, setResourceError] = useState({
     resourceName: "",
     selectedCategory: "",
-    resourceType: "", 
-    amount: "", 
+    resourceType: "",
+    amount: "",
     description: "",
+    pdfFile: "",
   });
 
-  function validateForm() {
+  const validateForm = () => {
     let valid = true;
     const resourceErrorCopy = { ...resourceError };
 
@@ -62,10 +62,8 @@ const AddResource = () => {
       valid = false;
     }
 
-    // Validate resource type
     if (resourceType) {
       resourceErrorCopy.resourceType = "";
-      // Validate amount if resource is paid
       if (resourceType.value === "PAID") {
         if (!amount.trim()) {
           resourceErrorCopy.amount = "Amount is required for paid resources";
@@ -94,70 +92,110 @@ const AddResource = () => {
       resourceErrorCopy.description = "";
     }
 
+    if (!pdfFile) {
+      resourceErrorCopy.pdfFile = "Resource file is required";
+      valid = false;
+    } else if (pdfFile.type !== "application/pdf") {
+      resourceErrorCopy.pdfFile = "Only PDF files are allowed";
+      valid = false;
+    } else {
+      resourceErrorCopy.pdfFile = "";
+    }
+
     setResourceError(resourceErrorCopy);
     return valid;
-  }
+  };
 
-  const handleNameChange = React.useCallback((e) => {
+  const handleNameChange = useCallback((e) => {
     setResourceName(e.target.value);
   }, []);
 
-  const handleCategorySelect = React.useCallback((option) => {
+  const handleCategorySelect = useCallback((option) => {
     setSelectedCategory(option);
   }, []);
 
-  const handleTypeSelect = React.useCallback((option) => { 
+  const handleTypeSelect = useCallback((option) => {
     setResourceType(option);
     if (option.value === "FREE") {
       setAmount("");
     }
   }, []);
 
-  const handleAmountChange = React.useCallback((e) => { 
+  const handleAmountChange = useCallback((e) => {
     setAmount(e.target.value);
   }, []);
 
-  const handleDescriptionChange = React.useCallback((e) => {
+  const handleDescriptionChange = useCallback((e) => {
     setDescription(e.target.value);
   }, []);
 
-  const handleEditorChange = React.useCallback((data) => {
-    console.log("Editor content changed:", data);
+  const handleFileChange = useCallback((e) => {
+    const file = e.target.files[0];
+    if (file && file.type === "application/pdf") {
+      setPdfFile(file);
+    } else {
+      setPdfFile(null);
+      toast.error("Please select a valid PDF file", { autoClose: 3000 });
+    }
   }, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Validate form fields
     if (!validateForm()) {
       return;
     }
 
+    const toastId = toast.loading("Submitting your resource...");
+
     try {
-      // Show loading state
-      const toastId = toast.loading("Submitting your resource...");
+      const formData = new FormData();
+      formData.append("title", resourceName);
+      formData.append("category", selectedCategory.value);
+      formData.append("description", description);
+      formData.append("type", resourceType.value);
+      formData.append("price", resourceType.value === "PAID" ? amount : "0");
+      
+      formData.append("pdfFile", pdfFile);
 
-      // Save editor content
-      const content = await editorRef.current?.save();
+      console.log("FormData contents:");
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
 
-      const resourceData = {
-        title: resourceName,
-        category: selectedCategory.value,
-        type: resourceType.value, // Add resource type
-        price: resourceType.value === "PAID" ? parseFloat(amount) : 0, // Add amount if paid
-        description,
-        content: JSON.stringify(content), // Convert EditorJS content to string
-        createdAt: uploadedDate
-      };
-      const API_URL = "http://localhost:8081/api/yib/expert/resource";
-      const response = await axios.post(API_URL, resourceData, {
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-      console.log("Resource submitted successfully:", response.data);
-      // Update toast to show success
+      const response = await fetch(
+        "http://localhost:8081/api/yib/expert/resource",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            
+          },
+          body: formData,
+        }
+      );
+
+      // Better error handling
+      if (!response.ok) {
+        let errorMessage = `HTTP ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || errorMessage;
+        } catch (e) {
+          // If response is not JSON, try to get text
+          try {
+            const errorText = await response.text();
+            errorMessage = errorText || errorMessage;
+          } catch (e) {
+            // Keep default error message
+          }
+        }
+        throw new Error(errorMessage);
+      }
+
+      const responseData = await response.json();
+      console.log("Success response:", responseData);
+
       toast.update(toastId, {
         render: "Resource submitted successfully!",
         type: "success",
@@ -171,12 +209,22 @@ const AddResource = () => {
       setResourceType(null);
       setAmount("");
       setDescription("");
-      editorRef.current?.clear();
+      setPdfFile(null);
+      
+      // Reset file input
+      const fileInput = document.getElementById("resource-file");
+      if (fileInput) {
+        fileInput.value = "";
+      }
+
     } catch (error) {
       console.error("Submission error:", error);
-      toast.dismiss();
-      toast.error(error.message || "Error submitting form. Please try again.", {
-        autoClose: 3000,
+
+      toast.update(toastId, {
+        render: error.message || "Error submitting resource. Please try again.",
+        type: "error",
+        isLoading: false,
+        autoClose: 5000,
       });
     }
   };
@@ -241,7 +289,6 @@ const AddResource = () => {
               )}
             </div>
 
-            {/* New Type Dropdown */}
             <div>
               <label className="text-base font-medium py-2 block mb-2">
                 Type
@@ -264,7 +311,7 @@ const AddResource = () => {
               <div>
                 <Input
                   id="resource-amount"
-                  label="Amount "
+                  label="Amount"
                   placeholder="Enter price amount"
                   type="number"
                   value={amount}
@@ -274,9 +321,7 @@ const AddResource = () => {
                   step="0.01"
                 />
                 {resourceError.amount && (
-                  <p className="text-red-500 text-sm">
-                    {resourceError.amount}
-                  </p>
+                  <p className="text-red-500 text-sm">{resourceError.amount}</p>
                 )}
               </div>
             )}
@@ -285,7 +330,7 @@ const AddResource = () => {
               <Input
                 id="resource-description"
                 label="Description"
-                placeholder="Enter a detailed description of the resource"
+                placeholder="Enter a detailed description of the resource (max 100 words)"
                 type="textarea"
                 value={description}
                 onChange={handleDescriptionChange}
@@ -299,19 +344,17 @@ const AddResource = () => {
             </div>
 
             <div className="md:col-span-2">
-              <label className="text-base font-medium py-2 block mb-2">
-                Resource Content
-              </label>
-              <p className="text-sm text-gray-500 mt-2">
-                Write the detailed content of your resource here
-              </p>
-              <div className="border rounded-lg p-4 bg-white">
-                <EditorComponent
-                  holderId="editorjs-container"
-                  onChange={handleEditorChange}
-                  ref={editorRef}
-                />
-              </div>
+              <FileUploadInput
+                id="resource-file"
+                label="Resource File (PDF only)"
+                onChange={handleFileChange}
+                accept=".pdf"
+                file={pdfFile}
+                required
+              />
+              {resourceError.pdfFile && (
+                <p className="text-red-500 text-sm">{resourceError.pdfFile}</p>
+              )}
             </div>
 
             <input type="hidden" name="uploadedDate" value={uploadedDate} />

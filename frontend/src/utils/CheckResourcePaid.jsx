@@ -26,7 +26,9 @@ const CheckResourcePaid = async (resourceId, token) => {
           },
         }
       );
-  
+
+      console.log(`Checking payment status for resource ID: ${resourceId}`);
+      console.log(`Response status: ${response.data}`);
       if (response.status === 401) {
         return {
           hasPaid: false,
